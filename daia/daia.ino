@@ -66,14 +66,17 @@ void lightingMode(){ /* lighting mode main function */
 
 /*********************/
 /* MODE 3: PIR mode  */
-void pirMode(int interval){
+void pirMode(float fast, float slow){
   /* 
     In this mode the sensor scans for any change in the scene's IR profile 
-    @param interval: interval before the camera may be activated again
+    @param fast: fastest interval (in seconds) before the camera is activated again
+    @param slow: slowest interval (in seconds) before the camera is activated again
   */
-  
+  fast *= 1000;
+  slow *= 1000;
+  float interval = map(analogRead(potPin), 0, 1023, fast, slow);
   if(digitalRead(pirPin)==HIGH){
-    triggerShutter(0,interval);
+    triggerShutter(0,interval/1000);
   }
 }
 
@@ -104,7 +107,6 @@ void triggerShutter(int bulb, float dly){
     delay(100);
   else{
     float bulbDelay = bulb*1000.0;
-    Serial.println(float(bulbDelay));
     delay(bulbDelay);
   }
   
@@ -194,7 +196,7 @@ void loop(){
         firstLoop=0;
         delay(500);          
       }   
-      pirMode(2);
+      pirMode(0.5, 2);
       break;
       
   }
